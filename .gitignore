@@ -1,0 +1,5 @@
+venv
+.env
+T1.ipynb
+.vscode
+old

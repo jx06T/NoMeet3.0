@@ -100,7 +100,7 @@ class _HTML {
 }
 
 // ---------------------------------------------------------------------------
-function GetAllPeople() {
+function GetAllPeople(option={force:false}) {
     if (HTML.MeetingDetails.getAttribute("aria-pressed") == 'true' || HTML.chatroomB.getAttribute("aria-pressed") == 'true' || HTML.Activity.getAttribute("aria-pressed") == 'true') {
         FailureCount++
         if (FailureCount > MaxFailureCount || option.force) {
@@ -316,8 +316,10 @@ function start() {
                             break;
                         case "GET":
                             postST()
+                            break;
                         case "FUN":
                             HTML[m.FUN]()
+                            break;
                         default:
                             break;
                     }

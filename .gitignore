@@ -1,5 +1,4 @@
-venv
-.env
-T1.ipynb
+py/.env
+py/T1.ipynb
 .vscode
 old

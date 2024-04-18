@@ -36,6 +36,8 @@ class _HTML {
     nextinit() {
         const RHB = document.querySelector('[data-promo-anchor-id="e7iErc"]');
         this.RHB = RHB
+        const emoji = document.querySelector('[jsname="G0pghc"]');
+        this.emoji = emoji
         const MeetingDetails = document.querySelector('[data-panel-id="5"]');
         this.MeetingDetails = MeetingDetails
         const AllParticipants = document.querySelector('[data-panel-id="1"]');
@@ -78,23 +80,69 @@ class _HTML {
     quit() {
         this.quitB.click()
     }
+    FakeQuit(){
+        this.quitB.click()
+        let temp = setInterval(() => {
+           let t = document.querySelector('[class="roSPhc"]') 
+           if (t) {
+                t.textContent  = "你已被退出這場會議"
+                console.log("!!!!!",t)
+                clearInterval(temp)
+           }
+        }, 100);
+    }
     HoldHand() {
         this.RHB.click()
+        this.RemoveFlash(this.RHB)
     }
     HoldHandx10() {
         let c = 0
         let temp = setInterval(() => {
             c++
-            this.RHB.click()
+            this.HoldHand()
             if (c>30) {
                 clearInterval(temp)
             }
         }, 200);
     }
+    RemoveFlash(html){
+        let c = 0
+        let temp= setInterval(() => {
+            html.classList.remove("VfPpkd-Bz112c-LgbsSe-OWXEXe-IT5dJd")
+            if (c>30) {
+                clearInterval(temp)
+            }
+        }, 50);
+    }
+    SendEmoji(id = 8) {
+        // console.log(this.emoji)
+        let tt = false
+        if (this.emoji.getAttribute("aria-pressed") == "false") {
+            this.emoji.click()
+            // this.RemoveFlash(this.emoji)
+            tt = true
+        }
+        setTimeout(() => {
+            let t = document.querySelector('[jsname="me23c"]')
+            if (!t) {
+                this.emoji.click()
+                return
+            }
+            t = t.childNodes[id].querySelector("button")
+            t.click()
+            t.click()
+            t.click()
+            t.click()
+            t.click()
+            if (tt) {
+                this.emoji.click()
+            }
+        }, 10);
+    }
     GetRoomCode() {
         return this.RoomCode.innerText
     }
-    Reload(){
+    reload(){
         location.reload();
     }
 }
@@ -338,7 +386,8 @@ window.addEventListener('keydown', function (event) {
         count++
     }
     if (key === '7') {
-        console.log(GetAllPeople())
+        HTML.SendEmoji()
+        // console.log(GetAllPeople())
     }
 })
 

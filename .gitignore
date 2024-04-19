@@ -3,3 +3,5 @@ py/T1.ipynb
 .vscode
 old
 py/sound
+py/__pycache__
+py/cogs/__pycache__

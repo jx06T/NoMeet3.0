@@ -23,15 +23,29 @@ class _HTML {
         this.waits = {}
     }
     init() {
-        let temp = setInterval(() => {
-            // const chatroomB = document.querySelector("[aria-label='與所有參與者進行即時通訊']");
-            const chatroomB = document.querySelector("[data-panel-id='2']");
-            if (chatroomB) {
-                this.chatroomB = chatroomB
-                this.nextinit()
-                clearInterval(temp)
+        chrome.storage.local.get("isAuto").then((r) => {
+            if (r.isAuto) {
+                let c = 0
+                let temp0 = setInterval(() => {
+                    c ++
+                    let t = document.querySelector('[data-promo-anchor-id="Qx7uuf"]')
+                    if (c>6) {
+                        t.click()
+                        chrome.storage.local.set({ "isAuto": false })
+                        clearInterval(temp0)
+                    }
+                }, 500);
             }
-        }, 500);
+            let temp = setInterval(() => {
+                // const chatroomB = document.querySelector("[aria-label='與所有參與者進行即時通訊']");
+                const chatroomB = document.querySelector("[data-panel-id='2']");
+                if (chatroomB) {
+                    this.chatroomB = chatroomB
+                    this.nextinit()
+                    clearInterval(temp)
+                }
+            }, 500);
+        })
     }
     nextinit() {
         const RHB = document.querySelector('[data-promo-anchor-id="e7iErc"]');
@@ -80,15 +94,15 @@ class _HTML {
     quit() {
         this.quitB.click()
     }
-    FakeQuit(){
+    FakeQuit() {
         this.quitB.click()
         let temp = setInterval(() => {
-           let t = document.querySelector('[class="roSPhc"]') 
-           if (t) {
-                t.textContent  = "你已被退出這場會議"
-                console.log("!!!!!",t)
+            let t = document.querySelector('[class="roSPhc"]')
+            if (t) {
+                t.textContent = "你已被退出這場會議"
+                console.log("!!!!!", t)
                 clearInterval(temp)
-           }
+            }
         }, 100);
     }
     HoldHand() {
@@ -100,16 +114,17 @@ class _HTML {
         let temp = setInterval(() => {
             c++
             this.HoldHand()
-            if (c>30) {
+            if (c > 30) {
                 clearInterval(temp)
             }
         }, 200);
     }
-    RemoveFlash(html){
+    RemoveFlash(html) {
         let c = 0
-        let temp= setInterval(() => {
+        let temp = setInterval(() => {
+            c++
             html.classList.remove("VfPpkd-Bz112c-LgbsSe-OWXEXe-IT5dJd")
-            if (c>30) {
+            if (c > 30) {
                 clearInterval(temp)
             }
         }, 50);
@@ -129,11 +144,14 @@ class _HTML {
                 return
             }
             t = t.childNodes[id].querySelector("button")
-            t.click()
-            t.click()
-            t.click()
-            t.click()
-            t.click()
+            let c = 0
+            let temp = setInterval(() => {
+                c++
+                t.click()
+                if (c > 5) {
+                    clearInterval(temp)
+                }
+            }, 300);
             if (tt) {
                 this.emoji.click()
             }
@@ -142,13 +160,15 @@ class _HTML {
     GetRoomCode() {
         return this.RoomCode.innerText
     }
-    reload(){
-        location.reload();
+    reload() {
+        chrome.storage.local.set({ "isAuto": true }).then(()=>{
+            location.reload();
+        })
     }
 }
 
 // ---------------------------------------------------------------------------
-function GetAllPeople(option={force:false}) {
+function GetAllPeople(option = { force: false }) {
     if (HTML.MeetingDetails.getAttribute("aria-pressed") == 'true' || HTML.chatroomB.getAttribute("aria-pressed") == 'true' || HTML.Activity.getAttribute("aria-pressed") == 'true') {
         FailureCount++
         if (FailureCount > MaxFailureCount || option.force) {
@@ -338,6 +358,7 @@ const Listencallback = (mutationsList, observer) => {
 
 const HTML = new _HTML()
 HTML.init()
+
 function start() {
     const config = { attributes: true, childList: true, subtree: true };
     const callback = Listencallback

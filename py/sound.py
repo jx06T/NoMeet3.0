@@ -4,7 +4,6 @@ class SoundPlayer:
     def __init__(self, devicename = None):
         self.devicename = devicename
         self.file = None
-        print(self.devicename)
         pygame.mixer.init(devicename=self.devicename)
         self.channel = pygame.mixer.Channel(0)
         self.is_playing = False

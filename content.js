@@ -63,6 +63,19 @@ class _HTML {
         const RoomCode = document.querySelector("[class='u6vdEc ouH3xe']");
         this.RoomCode = RoomCode
 
+      
+        const OPMic = document.querySelector("[class='fswXR']").querySelector(".Uulb3c");
+        this.OPMic = OPMic
+        const OPMicS = document.querySelector("[class='fswXR']").querySelector('[class="VYBDae-Bz112c-LgbsSe VYBDae-Bz112c-LgbsSe-OWXEXe-SfQLQb-suEOdc hzfTZb  S7Zu8d"]');
+        this.OPMicS = OPMicS
+        const OPCam = document.querySelector("[class='VlW4Pb']").querySelector(".eaeqqf");
+        this.OPCam = OPCam
+        const OPCamS = document.querySelector("[class='VlW4Pb']").querySelector('[class="VYBDae-Bz112c-LgbsSe VYBDae-Bz112c-LgbsSe-OWXEXe-SfQLQb-suEOdc hzfTZb  S7Zu8d"]');
+        this.OPCamS = OPCamS
+
+        const popMsg = document.querySelector("[class = 'fJsklc nulMpf Didmac sOkDId']") 
+        this.popMsg = popMsg
+
         let T = false
         if (this.chatroomB.getAttribute("aria-pressed") != 'true') {
             this.chatroomB.click()
@@ -165,9 +178,82 @@ class _HTML {
             location.reload();
         })
     }
+    openMic(name){
+        console.log(this.OPMic.parentNode.nextSibling.firstChild)
+        if (this.OPMic.getAttribute('data-is-muted') == "true") {
+            this.OPMic.click()
+        }
+        this.OPMicS.click()
+        let T1 = document.querySelector(".EDp2nc")
+        setTimeout(() => {
+            let T2 = T1.firstChild.querySelectorAll("[jsname='K4r5Ff']")
+            let T3 = Array.from(T2).find(e=>{
+                // console.log(e.textContent)
+                return e.textContent == name
+            })
+            let T4 = T3.parentNode
+            // console.log(T3,T4)
+            T4.click()
+            setTimeout(() => {
+                this.OPMicS.click()
+            }, 300);
+        }, 500);
+    }
+    closeMic(){
+        if (this.OPMic.getAttribute('data-is-muted') == "false") {
+            this.OPMic.click()
+        }
+        this.OPMicS.click()
+        let T1 = document.querySelector(".EDp2nc")
+        setTimeout(() => {
+            let T2 = T1.firstChild.querySelectorAll("[jsname='K4r5Ff']")
+            let T4 =  T2[0].parentNode
+            T4.click()
+            setTimeout(() => {
+                this.OPMicS.click()
+            }, 300);
+        }, 500);
+    }
+    openCam(name){
+        console.log(this.OPCam.parentNode.nextSibling.firstChild)
+        if (this.OPCam.getAttribute('data-is-muted') == "true") {
+            this.OPCam.click()
+        }
+        this.OPCamS.click()
+        let T1 = document.querySelector(".bifLQe")
+        setTimeout(() => {
+            let T2 = T1.querySelectorAll("[jsname='K4r5Ff']")
+            let T3 = Array.from(T2).find(e=>{
+                // console.log(e.textContent)
+                return e.textContent == name
+            })
+            let T4 = T3.parentNode
+            // console.log(T3,T4)
+            T4.click()
+            setTimeout(() => {
+                this.OPCamS.click()
+            }, 300);
+        }, 500);
+    }
+    closeCam(){
+        if (this.OPCam.getAttribute('data-is-muted') == "false") {
+            this.OPCam.click()
+        }
+        this.OPCamS.click()
+        let T1 = document.querySelector(".bifLQe")
+        setTimeout(() => {
+            let T2 = T1.querySelectorAll("[jsname='K4r5Ff']")
+            let T4 =  T2[0].parentNode
+            T4.click()
+            setTimeout(() => {
+                this.OPCamS.click()
+            }, 300);
+        }, 500);
+    }
 }
 
 // ---------------------------------------------------------------------------
+
 function GetAllPeople(option = { force: false }) {
     if (HTML.MeetingDetails.getAttribute("aria-pressed") == 'true' || HTML.chatroomB.getAttribute("aria-pressed") == 'true' || HTML.Activity.getAttribute("aria-pressed") == 'true') {
         FailureCount++
@@ -280,7 +366,30 @@ function CheckMsg(Msg, messenger) {
     }
     return 0
 }
-
+function check2(html) {
+    let from = html.querySelector('.RgDGVe')
+    let msg = html.querySelector('.LpG93b')
+    
+    const fromstate = CheckMessenger(from.innerText)
+    const msgstate = CheckMsg(msg.innerText, from.innerText)
+    console.log(from,msg,fromstate,msgstate)
+    switch (fromstate) {
+        case 0:
+            html.style.display = "block"
+            break
+        case 1:
+            html.style.display = "none"
+            return
+    }
+    switch (msgstate) {
+        case 0:
+            html.style.display = "block"
+            break
+        case 1:
+            html.style.display = "none"
+            return
+    }
+}
 
 function check(html) {
     const box = html.parentNode.parentNode
@@ -355,6 +464,24 @@ const Listencallback = (mutationsList, observer) => {
         }
     }
 }
+const Listencallback2 = (mutationsList, observer) => {
+    for (let mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+            if (mutation.addedNodes.length == 0) {
+                continue
+            }
+            if (!mutation.addedNodes[0].classList) {
+                continue
+            }
+            if (mutation.addedNodes[0].classList.contains("BQRwGe")) {
+                console.log(mutation.addedNodes[0])
+                check2(mutation.addedNodes[0])
+            }
+        }
+        else if (mutation.type === 'attributes') {
+        }
+    }
+}
 
 const HTML = new _HTML()
 HTML.init()
@@ -363,8 +490,14 @@ function start() {
     const config = { attributes: true, childList: true, subtree: true };
     const callback = Listencallback
     const observer = new MutationObserver(callback);
-    console.log(HTML)
     observer.observe(HTML.MsgBoxFather, config);
+    
+    const config2 = { attributes: true, childList: true, subtree: true };
+    const callback2 = Listencallback2
+    const observer2 = new MutationObserver(callback2);
+    observer2.observe(HTML.popMsg, config2);
+
+    console.log(HTML)
     const room_code = HTML.GetRoomCode()
     setTimeout(() => {
         GetAllPeople()
@@ -405,9 +538,13 @@ window.addEventListener('keydown', function (event) {
         sendAmsg("欸你很白癡欸" + count)
         // sendAmsg("欸你很白癡欸" + count, { force: true })
         count++
+        // HTML.closeMic()
+        HTML.closeCam()
     }
     if (key === '7') {
-        HTML.SendEmoji()
+        // HTML.openMic("Line 1 (Virtual Audio Cable)")
+        HTML.openCam("OBS Virtual Camera")
+        // HTML.SendEmoji()
         // console.log(GetAllPeople())
     }
 })

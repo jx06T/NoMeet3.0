@@ -39,7 +39,7 @@ async def get_member():
     await channel.send(embed=embed)
 
 AllMsg = []
-data = {"rooms":[],"NewRooms":[],"OldRooms":[],"people":[]}
+data = {"rooms":[ENV["MainRoomCodde"]],"NewRooms":[],"OldRooms":[],"people":[]}
 Lastfiles = []
 # ------------------------------------------------------------------------------------
 
@@ -61,7 +61,7 @@ async def on_message(message):
 async def on_ready():
     print(f"Logged on as {bot.user}")
     channel = bot.get_channel(int(ENV["MAIN_CHANNEL_ID"]))  # 填入要發送訊息的頻道 ID
-    await channel.send(f'{ENV["BOT_NAME"]}上線({get_ip()})')
+    await channel.send(f'{ENV["BOT_NAME"]}上線 ({get_ip()})')
     await bot.load_extension("cogs.msg")
     await bot.load_extension("cogs.fun")
     await bot.load_extension("cogs.setting")
@@ -114,25 +114,25 @@ async def check_room():
         for i in data["NewRooms"]:
             if ENV["MainRoomCodde"] == "AUTO":
                 ENV["MainRoomCodde"] = i
-                await channel.send(f'{ENV["BOT_NAME"]} 新會議{i}(已設定)')
+                await channel.send(f'{ENV["BOT_NAME"]} 新會議 {i}(已設定)')
             else:
-                await channel.send(f'{ENV["BOT_NAME"]} 新會議{i}')
+                await channel.send(f'{ENV["BOT_NAME"]} 新會議 {i}')
             bot.dispatch("rooms_update",data["rooms"])
 
         data["NewRooms"].clear()
 
         for i in data["OldRooms"]:
-            await channel.send(f'{ENV["BOT_NAME"]} 離開{i}')
+            await channel.send(f'{ENV["BOT_NAME"]} 離開 {i}')
             data["rooms"] = remove_item(data["rooms"],i)
             if len(data["rooms"])>0 and ENV["MainRoomCodde"] == i:
                 ENV["MainRoomCodde"]  = data["rooms"][0]
-                await channel.send(f'{ENV["BOT_NAME"]} 設定為{ENV["MainRoomCodde"]}')
+                await channel.send(f'{ENV["BOT_NAME"]} 設定為 {ENV["MainRoomCodde"]}')
 
             bot.dispatch("rooms_update",data["rooms"])
             
         data["OldRooms"].clear()
 
-        if not ENV["MainRoomCodde"]=="AUTO" and (ENV["MainRoomCodde"] == "" or all(s.strip() == "" for s in data["rooms"])):
+        if not ENV["MainRoomCodde"]=="AUTO" and  all(s.strip() == "" for s in data["rooms"]):
             await channel.send(f'{ENV["BOT_NAME"]} 沒有會議')
             data["rooms"].clear()
             ENV["MainRoomCodde"] = "AUTO"

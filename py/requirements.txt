@@ -2,3 +2,4 @@ discord.py
 flask
 flask_cors
 python-dotenv
+pyglet

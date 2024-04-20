@@ -1,7 +1,7 @@
 import discord 
 from discord.ext import commands
 import socket
-from env import ENV
+from Genv import ENV
 from flask import Flask, request,jsonify
 from flask_cors import CORS
 import threading
@@ -35,15 +35,27 @@ async def get_member():
     embed=discord.Embed(title="member", description="", color=0x860fbd)
     for i in  range(len(people)):
         embed.add_field(name=str(i+1)+"."+people[i], value="", inline=False)
-    embed.set_footer(text=data["RoomCode"])
+    embed.set_footer(text=ENV["MainRoomCodde"])
     await channel.send(embed=embed)
 
 AllMsg = []
-data = {"rooms":[ENV["MainRoomCodde"]],"NewRooms":[],"OldRooms":[]}
+data = {"rooms":[],"NewRooms":[],"OldRooms":[],"people":[]}
+Lastfiles = []
 # ------------------------------------------------------------------------------------
 
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix ="$", intents = intents)
+
+@bot.event
+async def on_message(message):
+    # print(message.content)
+    if message.attachments:
+        for attachment in message.attachments:
+            print("Attached File:", attachment.url)  # Print the URL of each attached file
+            Lastfiles.append(attachment.url)
+            bot.dispatch("lastfiles_update",Lastfiles)
+
+    await bot.process_commands(message)
 
 @bot.event
 async def on_ready():
@@ -75,31 +87,61 @@ async def on_get_room_code():
     embed.set_footer(text=ENV["MainRoomCodde"])
     await channel.send(embed=embed)
 
+@bot.command()
+async def unload(ctx,extension):
+    await  bot.unload_extension(f"cogs.{extension}")
+    # slash = await bot.tree.sync()
+    await ctx.send(F'UnLoaded {extension} done.' )
+
+@bot.command()
+async def load(ctx,extension):
+    await  bot.load_extension(f"cogs.{extension}")
+    # slash = await bot.tree.sync()
+    await ctx.send(F'Loaded {extension} done.' )
+
+@bot.command()
+async def reload(ctx,extension):
+    await  bot.reload_extension(f"cogs.{extension}")
+    # slash = await bot.tree.sync()
+    await ctx.send(F'Reloaded {extension} done.' )
+
 # -------------------------------------------------------------------------------------------------------------------------------
 async def check_room():
     while not bot.is_closed():
         print(ENV["MainRoomCodde"],data["rooms"],data["NewRooms"],data["OldRooms"])
         channel = bot.get_channel(int(ENV["MAIN_CHANNEL_ID"]))  # 填入要發送訊息的頻道 ID
 
-        if not ENV["MainRoomCodde"]=="jx" and (ENV["MainRoomCodde"] == "" or all(s.strip() == "" for s in data["rooms"])):
-            await channel.send(f'{ENV["BOT_NAME"]} 沒有會議')
-            data["rooms"].clear()
-            ENV["MainRoomCodde"] = "jx"
-            bot.dispatch("ENV_update",ENV)
-
         for i in data["NewRooms"]:
-            await channel.send(f'{ENV["BOT_NAME"]} 新會議({i})')
+            if ENV["MainRoomCodde"] == "AUTO":
+                ENV["MainRoomCodde"] = i
+                await channel.send(f'{ENV["BOT_NAME"]} 新會議{i}(已設定)')
+            else:
+                await channel.send(f'{ENV["BOT_NAME"]} 新會議{i}')
+            bot.dispatch("rooms_update",data["rooms"])
+
         data["NewRooms"].clear()
 
         for i in data["OldRooms"]:
-            await channel.send(f'{ENV["BOT_NAME"]} 從{i}離開')
+            await channel.send(f'{ENV["BOT_NAME"]} 離開{i}')
             data["rooms"] = remove_item(data["rooms"],i)
+            if len(data["rooms"])>0 and ENV["MainRoomCodde"] == i:
+                ENV["MainRoomCodde"]  = data["rooms"][0]
+                await channel.send(f'{ENV["BOT_NAME"]} 設定為{ENV["MainRoomCodde"]}')
+
+            bot.dispatch("rooms_update",data["rooms"])
+            
         data["OldRooms"].clear()
+
+        if not ENV["MainRoomCodde"]=="AUTO" and (ENV["MainRoomCodde"] == "" or all(s.strip() == "" for s in data["rooms"])):
+            await channel.send(f'{ENV["BOT_NAME"]} 沒有會議')
+            data["rooms"].clear()
+            ENV["MainRoomCodde"] = "AUTO"
+            bot.dispatch("ENV_update",ENV)
 
         for i in data["rooms"]:
             data["OldRooms"].append(i)
-
-        await asyncio.sleep(7)
+        
+        await asyncio.sleep(5)
     
 # -------------------------------------------------------------------------------------------------------------------------------
 app = Flask(__name__)

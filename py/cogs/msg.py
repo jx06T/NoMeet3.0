@@ -4,14 +4,24 @@ from discord.ext import commands
 from _cog_class import cog_class
 from typing import Literal,Optional
 from sound import SoundPlayer
-from env import ENV 
+from Genv import ENV 
+import requests
 class msg(cog_class):
     def __init__(self, bot):
         super().__init__(bot)
         self.player = SoundPlayer(ENV["DEVICE_NAME"])
         self.AllMsg = []
-        print("msg load")
+        print("msg load",self.player.R)
         
+    def download_file(self,url, save_path):
+        response = requests.get(url)
+        if response.status_code == 200:
+            with open(save_path, 'wb') as file:
+                file.write(response.content)
+                print("文件下载成功！")
+        else:
+            print("下载失败，HTTP 状态码:", response.status_code)
+
     def get_view_forPlay(self,t):
         view = discord.ui.View()
         view.add_item(
@@ -26,18 +36,22 @@ class msg(cog_class):
     @app_commands.command(name="sound", description="說話")
     @discord.app_commands.describe(audio_file=':')
     @discord.app_commands.describe(force=':')
-    async def Csound(self,interaction: discord.Interaction,audio_file: discord.Attachment,force:Literal['T', 'F'] = "F"):
+    async def Csound(self,interaction: discord.Interaction,audio_file: discord.Attachment= None,force:Literal['T', 'F'] = "F"):
         view = self.get_view_forPlay(False)
-        await interaction.response.send_message(content=audio_file.filename, view=view)
-        # 將音訊檔案存入本地
         if audio_file:
-            with open(ENV["SCRIPT_DIRECTORY"]+"\\sound\\"+audio_file.filename, "wb") as f:
+            filename = audio_file.filename
+            await interaction.response.send_message(content=filename+"\n"+self.player.R, view=view)
+            with open(ENV["SCRIPT_DIRECTORY"]+"\\sound\\"+filename, "wb") as f:
                 await audio_file.save(f)
-
-        self.AllMsg.append({"type": "sound", "from":interaction.user.name, "file": audio_file.filename, "force": force})
+        else:
+            filename = "jxeeee.ogg"
+            await interaction.response.send_message(content=filename+"\n"+self.player.R, view=view)
+            self.download_file(self.Lastfiles[-1], ENV["SCRIPT_DIRECTORY"]+"\\sound\\"+filename)
+            
+        self.AllMsg.append({"type": "sound", "from":interaction.user.name, "file": filename, "force": force})
         self.bot.dispatch("msg_updated", self.AllMsg)
 
-        self.player.change_file(ENV["SCRIPT_DIRECTORY"]+"\\sound\\"+audio_file.filename)
+        self.player.change_file(ENV["SCRIPT_DIRECTORY"]+"\\sound\\"+filename)
         self.player.play()
         self.player.pause()
 
@@ -63,7 +77,12 @@ class msg(cog_class):
     async def on_ENV_update(self,env):
         ENV = env
         self.player.change_devicename(ENV["DEVICE_NAME"])
-        print("envvv")
+        print("envvv",ENV)
+        
+    @commands.Cog.listener()
+    async def on_lastfiles_update(self,Lastfiles):
+        self.Lastfiles = Lastfiles.copy()
+        print("Lastfiles",Lastfiles)
 
 async def setup(bot):
     await bot.add_cog(msg(bot))

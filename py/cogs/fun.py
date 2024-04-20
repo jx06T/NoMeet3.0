@@ -4,15 +4,16 @@ from discord.ext import commands
 from _cog_class import cog_class
 from typing import Literal,Optional
 from sound import SoundPlayer
-from env import ENV 
+from Genv import ENV ,update_env_variable
 import math
 import time
 import asyncio
 
-class main(cog_class):
+class fun(cog_class):
     def __init__(self, bot):
         super().__init__(bot)
         self.AllMsg = []
+        self.rooms = ["AUTO"]
         print("fun load")
         
     @app_commands.command(name = "fun", description = "fun")
@@ -79,8 +80,13 @@ class main(cog_class):
                 custom_id="GRoomCode"
             )
         )
+        view.add_item(
+            discord.ui.Select(custom_id="MainRoomCodde", placeholder="MainRoomCodde("+ENV["MainRoomCodde"]+")", options=[
+                discord.SelectOption(label=room) for room in self.rooms
+                ])
+        )
         await interaction.response.send_message(content="", view=view)
-
+    
     @commands.Cog.listener()
     async def on_interaction(self, interaction: discord.Interaction):
         if interaction.data.get("custom_id") == "member":
@@ -93,11 +99,22 @@ class main(cog_class):
         elif interaction.data.get("custom_id") == "GRoomCode":
             await interaction.response.edit_message(content="Waiting..."+str(math.floor(time.time()*10)))
             self.bot.dispatch("get_room_code")
-        
+
+        elif interaction.data.get("custom_id") == "MainRoomCodde":
+            update_env_variable("MainRoomCodde",interaction.data.get("values")[0])
+            await interaction.response.send_message(content ="ok")
+            
         elif interaction.data.get("custom_id") in["HoldHandx10","HoldHand","reload","quit","FakeQuit","SendEmoji"]:
             self.AllMsg.append({"type":"FUN","FUN":interaction.data.get("custom_id") ,"from":interaction.user.name})
             self.bot.dispatch("msg_updated", self.AllMsg)
             await interaction.response.edit_message(content="OK..."+str(math.floor(time.time()*10)))
+            
+    @commands.Cog.listener()
+    async def on_rooms_update(self,rooms):
+        self.rooms = rooms.copy()
+        if len(self.rooms)==0:
+            self.rooms.append("AUTO")
+        print("rooms",rooms)
 
     @commands.Cog.listener()
     async def on_ENV_update(self,env):
@@ -106,4 +123,4 @@ class main(cog_class):
             
 
 async def setup(bot):
-    await bot.add_cog(main(bot))
+    await bot.add_cog(fun(bot))

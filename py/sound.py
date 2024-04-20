@@ -1,10 +1,19 @@
 import pygame
 import time
+from pydub import AudioSegment
 class SoundPlayer:
     def __init__(self, devicename = None):
         self.devicename = devicename
         self.file = None
-        pygame.mixer.init(devicename=self.devicename)
+        self.R = ''
+        try:
+            pygame.mixer.init(devicename=self.devicename)
+            self.R = "ok"
+        except:
+            pygame.mixer.init()
+            self.R = "No such device"
+            self.devicename = None
+
         self.channel = pygame.mixer.Channel(0)
         self.is_playing = False
 
@@ -37,8 +46,15 @@ class SoundPlayer:
 
     def change_devicename(self, new_devicename):
         self.stop()
+        temp = self.devicename
         self.devicename = new_devicename
-        pygame.mixer.init(devicename=self.devicename)
+        try:
+            pygame.mixer.init(devicename=self.devicename)
+            self.R = "ok"
+        except:
+            self.devicename = temp
+            pygame.mixer.init(devicename=self.devicename)
+                
 
 if __name__=='__main__':
     # 使用範例

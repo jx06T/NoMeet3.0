@@ -212,6 +212,11 @@ class _HTML {
             setTimeout(() => {
                 this.OPMicS.click()
             }, 300);
+            let T3 = Array.from(T2).map(e=>{
+                return e.textContent
+            })
+            this.A_S = T3
+            console.log(this.A_S)
         }, 500);
     }
     openCam(name){
@@ -248,6 +253,10 @@ class _HTML {
             setTimeout(() => {
                 this.OPCamS.click()
             }, 300);
+            let T3 = Array.from(T2).map(e=>{
+                return e.textContent
+            })
+            this.A_V = T3
         }, 500);
     }
 }
@@ -431,7 +440,8 @@ function check(html) {
 function postST() {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
-    const raw = JSON.stringify({ people: GetAllPeople() })
+    const raw = JSON.stringify({ people: GetAllPeople() ,A_S:HTML.A_S,A_V:HTML.A_V})
+    console.log(HTML.A_S)
     // const raw =  JSON.stringify([1,3,4])
     console.log(raw)
     const requestOptions = {
@@ -485,7 +495,6 @@ const Listencallback2 = (mutationsList, observer) => {
 
 const HTML = new _HTML()
 HTML.init()
-
 function start() {
     const config = { attributes: true, childList: true, subtree: true };
     const callback = Listencallback
@@ -499,9 +508,17 @@ function start() {
 
     console.log(HTML)
     const room_code = HTML.GetRoomCode()
+
     setTimeout(() => {
         GetAllPeople()
+        setTimeout(() => {
+            HTML.closeMic()
+        }, 1500);
+        setTimeout(() => {
+            HTML.closeCam()
+        }, 3000);
     }, 1000);
+
     var requestOptions = {
         method: 'GET',
         redirect: 'follow'
@@ -519,8 +536,24 @@ function start() {
                         case "GET":
                             postST()
                             break;
+                        case "GET1":
+                            postST()
+                            setTimeout(() => {
+                                HTML.closeMic()
+                            }, 1500);
+                            setTimeout(() => {
+                                HTML.closeCam()
+                                postST()
+                            }, 3000);
+                            break;
                         case "FUN":
                             HTML[m.FUN]()
+                            break;
+                        case "sound":
+                            HTML.openMic(m.name)
+                            break;
+                        case "video":
+                            HTML.openCam(m.name)
                             break;
                         default:
                             break;

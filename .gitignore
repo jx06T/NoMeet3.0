@@ -2,4 +2,5 @@ py/.env
 .vscode
 old
 py/sound/*
+py/video/*
 __pycache__

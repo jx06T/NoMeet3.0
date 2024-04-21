@@ -39,7 +39,7 @@ async def get_member():
     await channel.send(embed=embed)
 
 AllMsg = []
-data = {"rooms":[ENV["MainRoomCodde"]],"NewRooms":[],"OldRooms":[],"people":[]}
+data = {"rooms":[ENV["MainRoomCodde"]],"NewRooms":[],"OldRooms":[],"people":[],"DS":{"A_V":["?"],"A_S":["?"]}}
 Lastfiles = []
 # ------------------------------------------------------------------------------------
 
@@ -69,6 +69,15 @@ async def on_ready():
     bg_task = bot.loop.create_task(check_room())
     # await check_room()
     print("!!!!!!!!!!!!!!!") 
+    
+# async def on_interaction(interaction: discord.Interaction):
+#     if interaction.data.get("custom_id") in ["DEVICE_NAME_S","DEVICE_NAME_V","No_Entering"]:
+# bot.add_listener(on_interaction)
+
+@bot.event
+async def on_get_DS():
+    await asyncio.sleep(1)
+    bot.dispatch("device_update",data["DS"])
 
 @bot.event
 async def on_get_member():
@@ -167,7 +176,9 @@ def api():
 def get():
     data_received = request.json
     data["people"] = data_received["people"]
-    print(data_received)  
+    data["DS"]["A_V"] = data_received["A_V"]
+    data["DS"]["A_S"] = data_received["A_S"]
+    # print(data_received)  
     return "ok"
     
 if __name__=='__main__':

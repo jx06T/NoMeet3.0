@@ -100,7 +100,7 @@ class fun(cog_class):
             await interaction.response.edit_message(content="Waiting..."+str(math.floor(time.time()*10)))
             self.bot.dispatch("get_room_code")
 
-        elif interaction.data.get("custom_id") == "MainRoomCodde":
+        elif interaction.data.get("custom_id") in ["MainRoomCodde"]:
             update_env_variable("MainRoomCodde",interaction.data.get("values")[0])
             await interaction.response.send_message(content ="ok")
             

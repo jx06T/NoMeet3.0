@@ -7,14 +7,15 @@ from sound import SoundPlayer
 from video import VideoPlayer
 from Genv import ENV 
 import requests
-import asyncio
+from gtts import gTTS
 import re
+import math
 import time
 class msg(cog_class):
     def __init__(self, bot):
         super().__init__(bot)
         self.player = SoundPlayer(ENV["DEVICE_NAME_S"])
-        self.playerV = VideoPlayer()
+        self.playerV = VideoPlayer(width=1280, height=720,device=ENV["DEVICE_NAME_V"])
         self.AllMsg = []
         print("msg load",self.player.R)
         
@@ -47,20 +48,24 @@ class msg(cog_class):
 
     @app_commands.command(name="sound", description="說話")
     @discord.app_commands.describe(audio_file=':')
+    @discord.app_commands.describe(audio_text=':')
     @discord.app_commands.describe(force=':')
-    async def Csound(self,interaction: discord.Interaction,audio_file: discord.Attachment= None,force:Literal['T', 'F'] = "F"):
-        print(1234)
+    async def Csound(self,interaction: discord.Interaction,audio_file: discord.Attachment= None, audio_text:str ="",force:Literal['T', 'F'] = "F"):
         view = self.get_view_forPlay(False,"S")
-        if audio_file:
+        if audio_text:
+            tts = gTTS(audio_text, lang='zh-tw')
+            filename = "tts"+str(math.floor(time.time()*10))[8:]+".mp3"
+            tts.save(ENV["SCRIPT_DIRECTORY"]+"\\sound\\"+filename)
+
+        elif audio_file:
             filename = audio_file.filename
-            await interaction.response.send_message(content=filename+"\n"+self.player.R, view=view)
             with open(ENV["SCRIPT_DIRECTORY"]+"\\sound\\"+filename, "wb") as f:
                 await audio_file.save(f)
         else:
-            filename = "jxeeee.wav"
-            await interaction.response.send_message(content=filename+"\n"+self.player.R, view=view)
+            filename = "jxeeee"+str(math.floor(time.time()*10))[8:]+".wav"
             self.download_file(self.Lastfiles[-1], ENV["SCRIPT_DIRECTORY"]+"\\sound\\"+filename)
             
+        await interaction.response.send_message(content=filename+"\n"+self.player.R, view=view)
         self.AllMsg.append({"type": "sound", "from":interaction.user.name, "file": filename, "force": force,"name":ENV["DEVICE_NAME_S"]})
         self.bot.dispatch("msg_updated", self.AllMsg)
 
@@ -72,14 +77,13 @@ class msg(cog_class):
     @discord.app_commands.describe(video_file=':')
     @discord.app_commands.describe(force=':')
     async def Cvideo(self,interaction: discord.Interaction,video_file: discord.Attachment= None,force:Literal['T', 'F'] = "F"):
-        print(5618)
         view = self.get_view_forPlay(False,"V")
         if video_file:
             filename = video_file.filename
             with open(ENV["SCRIPT_DIRECTORY"]+"\\video\\"+filename, "wb") as f:
                 await video_file.save(f)
         else:
-            filename = "jxeeee.mp4"
+            filename = "jxeeee"+str(math.floor(time.time()*10))[8:]+".mp4"
             filename_match = re.search(r'/([^/]+(\.mp4|\.mov|\.mp3|\.avi|\.mkv))\?', self.Lastfiles[-1])
             if filename_match:
                 filename = filename_match.group(1)
@@ -91,9 +95,7 @@ class msg(cog_class):
         await interaction.response.send_message(content=filename, view=view)
         self.playerV.change_file(ENV["SCRIPT_DIRECTORY"]+"\\video\\"+filename)
         self.playerV.start_virtual_camera()
-        # self.playerV.pause()
-        # await asyncio.sleep(2)
-        time.sleep(2)
+
         self.AllMsg.append({"type": "video", "from":interaction.user.name, "file": filename, "force": force,"name":ENV["DEVICE_NAME_V"]})
         self.bot.dispatch("msg_updated", self.AllMsg)
         
@@ -116,7 +118,9 @@ class msg(cog_class):
                 self.player.unpause()
                 self.AllMsg.append({"type": "sound", "from":interaction.user.name,"name":ENV["DEVICE_NAME_S"]})
                 self.bot.dispatch("msg_updated", self.AllMsg)
+
             await interaction.response.edit_message(view=self.get_view_forPlay(self.player.is_playing,"S"))
+            
         elif interaction.data.get("custom_id")=="finishS":
             self.AllMsg.append({"type":"FUN","FUN":"closeMic","from":interaction.user.name})
             self.bot.dispatch("msg_updated", self.AllMsg)
@@ -134,7 +138,7 @@ class msg(cog_class):
         elif interaction.data.get("custom_id")=="finishV":
             self.AllMsg.append({"type":"FUN","FUN":"closeCam","from":interaction.user.name})
             self.bot.dispatch("msg_updated", self.AllMsg)
-            self.playerV.done()
+            # self.playerV.done()
             await interaction.response.edit_message(content="X")
 
         
@@ -148,6 +152,13 @@ class msg(cog_class):
     async def on_lastfiles_update(self,Lastfiles):
         self.Lastfiles = Lastfiles.copy()
         print("Lastfiles",Lastfiles)
+
+    @commands.Cog.listener()
+    async def on_device_update(self,d):
+        time.sleep(0.2)
+        del self.playerV
+        self.playerV = VideoPlayer(width=1280, height=720,device=ENV["DEVICE_NAME_V"])
+    
 
 async def setup(bot):
     await bot.add_cog(msg(bot))

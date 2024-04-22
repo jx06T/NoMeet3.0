@@ -67,8 +67,6 @@ async def on_ready():
     await bot.load_extension("cogs.setting")
     slash = await bot.tree.sync()
     bg_task = bot.loop.create_task(check_room())
-    # await check_room()
-    print("!!!!!!!!!!!!!!!") 
     
 # async def on_interaction(interaction: discord.Interaction):
 #     if interaction.data.get("custom_id") in ["DEVICE_NAME_S","DEVICE_NAME_V","No_Entering"]:
@@ -150,11 +148,12 @@ async def check_room():
         for i in data["rooms"]:
             data["OldRooms"].append(i)
         
-        await asyncio.sleep(5)
+        await asyncio.sleep(6)
     
 # -------------------------------------------------------------------------------------------------------------------------------
 app = Flask(__name__)
 CORS(app)
+
 @app.route("/", methods=['GET'])
 def api():
     rRoomCode = request.args.get('room_code')

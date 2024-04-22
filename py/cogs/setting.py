@@ -12,7 +12,6 @@ class setting(cog_class):
     def __init__(self, bot):
         super().__init__(bot)
         self.AllMsg = []
-        # self.devices = {"V":[],"S":[]}
         self.devices = {"A_V":["?"],"A_S":["?"]}
         print("setting load")
         
@@ -23,12 +22,13 @@ class setting(cog_class):
             self.bot = bot
             self.add_item(discord.ui.TextInput(custom_id ="BOT_NAME",label = "BotName",default = ENV["BOT_NAME"]))
             self.add_item(discord.ui.TextInput(custom_id = "MAIN_CHANNEL_ID",label = "Channel-ID",default = ENV["MAIN_CHANNEL_ID"]))
-            self.add_item(discord.ui.TextInput(custom_id = "_delete",label = "!!delete!!",default = "___"))
-            # self.add_item(discord.ui.TextInput(custom_id="DEVICE_NAME",label = "devicename-s",default = ENV["DEVICE_NAME"]))
-        # MainRoomCodde = discord.ui.TextInput(label = "MainRoomCodde",default = ENV["MainRoomCodde"])
+            self.add_item(discord.ui.TextInput(custom_id = "_delete_S_V_file",label = "!!delete_S-V-file!!(type 'delete-S-V')",default = "___"))
+            self.add_item(discord.ui.TextInput(custom_id = "_delete_all",label = "!!deleteALL!!(type 'delete-ALL')",default = "___"))
+            
         async def on_submit(self, interaction: discord.Interaction):
             for item in self.children:
                 R = update_env_variable(item.custom_id,item.value)
+                
             await interaction.response.send_message(f"ok!")
             self.bot.dispatch("ENV_update",R)
 
@@ -39,7 +39,7 @@ class setting(cog_class):
             discord.ui.Button(
                 label="R",
                 style=discord.ButtonStyle.blurple,
-                custom_id="RRRR"
+                custom_id="reget_Ds"
             )
             )
             self.add_item(
@@ -83,7 +83,8 @@ class setting(cog_class):
             await interaction.response.send_message(content=interaction.data.get("custom_id")+"："+interaction.data.get("values")[0])
             R = update_env_variable(interaction.data.get("custom_id"),interaction.data.get("values")[0])
             self.bot.dispatch("ENV_update",R)
-        elif interaction.data.get("custom_id") == "RRRR":
+
+        elif interaction.data.get("custom_id") == "reget_Ds":
             await interaction.response.send_message(content="ok")
             self.AllMsg.append({"type":"GET1","from":interaction.user.name})
             self.bot.dispatch("msg_updated", self.AllMsg)
@@ -97,7 +98,7 @@ class setting(cog_class):
     async def on_device_update(self,d):
         print("device",d)
         self.devices = d.copy()
-        channel = self.bot.get_channel(int(ENV["MAIN_CHANNEL_ID"]))  # 填入要發送訊息的頻道 ID
+        channel = self.bot.get_channel(int(ENV["MAIN_CHANNEL_ID"])) 
         await channel.send(view=self.SelectView(self.devices))
 
 

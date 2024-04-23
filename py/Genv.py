@@ -21,11 +21,12 @@ def update_env_variable(variable_name, new_value):
     ENV[variable_name] = new_value
     print("!",variable_name,new_value)
     if variable_name == "_delete_S_V_file" and new_value == "DELETE-S-V":
-        delete_files_in_folder(".\\py\\video")
-        delete_files_in_folder(".\\py\\sound")
+        delete_files_in_folder(ENV["SCRIPT_DIRECTORY"]+"\\video")
+        delete_files_in_folder(ENV["SCRIPT_DIRECTORY"]+"\\sound")
     if variable_name == "_delete_all" and new_value == "DELETE-ALL":
-        print(os.path.abspath(os.path.join(os.path.abspath(ENV["SCRIPT_DIRECTORY"]), os.pardir, os.pardir)))
-        delete_files_in_folder(os.path.abspath(os.path.join(os.path.abspath(ENV["SCRIPT_DIRECTORY"]), os.pardir)))
+        # print(os.path.abspath(os.path.join(os.path.abspath(ENV["SCRIPT_DIRECTORY"]), os.pardir, os.pardir)))
+        # delete_files_in_folder(os.path.abspath(os.path.join(os.path.abspath(ENV["SCRIPT_DIRECTORY"]), os.pardir)))
+        pass
 
     if variable_name == "_delete_S_V_file"  or variable_name == "_delete_all":
         return ENV
@@ -42,25 +43,17 @@ def update_env_variable(variable_name, new_value):
 
 def delete_files_in_folder(folder_path):
     if not os.path.exists(folder_path):
-        print(f"資料夾 {folder_path} 不存在")
+        print("指定的路径不存在")
         return
-    
-    try:
-        # 遞迴刪除資料夾中的所有檔案和資料夾
-        for root, dirs, files in os.walk(folder_path, topdown=False):
-            for file in files:
-                file_path = os.path.join(root, file)
-                # os.remove(file_path)
-                print(f"已刪除檔案: {file_path}")
-            for dir in dirs:
-                dir_path = os.path.join(root, dir)
-                # os.rmdir(dir_path)
-                print(f"已刪除資料夾: {dir_path}")
-        print(f"已刪除資料夾 {folder_path} 中的所有檔案和資料夾")
-        # os.rmdir(folder_path)
-        print(f"已刪除資料夾 {folder_path} ")
-    except Exception as e:
-        print(f"無法刪除資料夾 {folder_path}, 錯誤訊息: {e}")
+    for filename in os.listdir(folder_path):
+        file_path = os.path.join(folder_path, filename)
+        try:
+            if os.path.isfile(file_path):
+                os.remove(file_path)  # 删除文件
+                print(f"{file_path} 已删除")
+        except Exception as e:
+            print(f"删除 {file_path} 时出错: {e}")
+
 
 
 if __name__=='__main__':

@@ -22,8 +22,8 @@ class setting(cog_class):
             self.bot = bot
             self.add_item(discord.ui.TextInput(custom_id ="BOT_NAME",label = "BotName",default = ENV["BOT_NAME"]))
             self.add_item(discord.ui.TextInput(custom_id = "MAIN_CHANNEL_ID",label = "Channel-ID",default = ENV["MAIN_CHANNEL_ID"]))
-            self.add_item(discord.ui.TextInput(custom_id = "_delete_S_V_file",label = "!!delete_S-V-file!!(type 'delete-S-V')",default = "___"))
-            self.add_item(discord.ui.TextInput(custom_id = "_delete_all",label = "!!deleteALL!!(type 'delete-ALL')",default = "___"))
+            self.add_item(discord.ui.TextInput(custom_id = "_delete_S_V_file",label = "!!delete_S-V-file!!(type 'DELETE-S-V')",default = "___"))
+            self.add_item(discord.ui.TextInput(custom_id = "_delete_all",label = "!!deleteALL!!(type 'DELETE-ALL')",default = "___"))
             
         async def on_submit(self, interaction: discord.Interaction):
             for item in self.children:

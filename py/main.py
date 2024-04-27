@@ -180,6 +180,11 @@ def get():
     # print(data_received)  
     return "ok"
     
+
+@app.route("/can_enter", methods=['GET'])
+def gett():
+    return ENV["No_Entering"]
+    
 if __name__=='__main__':
     DCthreads =threading.Thread(target=starDC,args=(ENV["DC_TOKEN"],))
     DCthreads.start()

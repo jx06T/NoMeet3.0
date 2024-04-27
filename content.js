@@ -23,14 +23,19 @@ class _HTML {
         this.waits = {}
     }
     init() {
+        is_No_Entering() //確認是否被封鎖
         chrome.storage.local.get("isAuto").then((r) => {
             if (r.isAuto) {
+                console.log("sss")
                 let c = 0
                 let temp0 = setInterval(() => {
-                    c ++
-                    let t = document.querySelector('[data-promo-anchor-id="Qx7uuf"]')
-                    if (c>6) {
-                        t.click()
+                    c++
+                    let t = document.querySelector('[jsname="Qx7uuf"]')
+                    // t.click()
+                    if (t || c > 9) {
+                        if (t) {
+                            t.click()
+                        }
                         chrome.storage.local.set({ "isAuto": false })
                         clearInterval(temp0)
                     }
@@ -39,6 +44,7 @@ class _HTML {
             let temp = setInterval(() => {
                 // const chatroomB = document.querySelector("[aria-label='與所有參與者進行即時通訊']");
                 const chatroomB = document.querySelector("[data-panel-id='2']");
+                console.log(chatroomB)
                 if (chatroomB) {
                     this.chatroomB = chatroomB
                     this.nextinit()
@@ -63,7 +69,7 @@ class _HTML {
         const RoomCode = document.querySelector("[class='u6vdEc ouH3xe']");
         this.RoomCode = RoomCode
 
-      
+
         const OPMic = document.querySelector("[class='fswXR']").querySelector(".Uulb3c");
         this.OPMic = OPMic
         const OPMicS = document.querySelector("[class='fswXR']").querySelector('[class="VYBDae-Bz112c-LgbsSe VYBDae-Bz112c-LgbsSe-OWXEXe-SfQLQb-suEOdc hzfTZb  S7Zu8d"]');
@@ -73,7 +79,7 @@ class _HTML {
         const OPCamS = document.querySelector("[class='VlW4Pb']").querySelector('[class="VYBDae-Bz112c-LgbsSe VYBDae-Bz112c-LgbsSe-OWXEXe-SfQLQb-suEOdc hzfTZb  S7Zu8d"]');
         this.OPCamS = OPCamS
 
-        const popMsg = document.querySelector("[class = 'fJsklc nulMpf Didmac sOkDId']") 
+        const popMsg = document.querySelector("[class = 'fJsklc nulMpf Didmac sOkDId']")
         this.popMsg = popMsg
 
         let T = false
@@ -112,7 +118,8 @@ class _HTML {
         let temp = setInterval(() => {
             let t = document.querySelector('[class="roSPhc"]')
             if (t) {
-                t.textContent = "你已被退出這場會議"
+                t.textContent = "你已從會議中被移除"
+                // t.textContent = "你已被退出這場會議"
                 console.log("!!!!!", t)
                 clearInterval(temp)
             }
@@ -174,11 +181,11 @@ class _HTML {
         return this.RoomCode.innerText
     }
     reload() {
-        chrome.storage.local.set({ "isAuto": true }).then(()=>{
+        chrome.storage.local.set({ "isAuto": true }).then(() => {
             location.reload();
         })
     }
-    openMic(name){
+    openMic(name,x=false) {
         console.log(this.OPMic.parentNode.nextSibling.firstChild)
         if (this.OPMic.getAttribute('data-is-muted') == "true") {
             this.OPMic.click()
@@ -187,7 +194,7 @@ class _HTML {
         let T1 = document.querySelector(".EDp2nc")
         setTimeout(() => {
             let T2 = T1.firstChild.querySelectorAll("[jsname='K4r5Ff']")
-            let T3 = Array.from(T2).find(e=>{
+            let T3 = Array.from(T2).find(e => {
                 // console.log(e.textContent)
                 return e.textContent == name
             })
@@ -196,39 +203,56 @@ class _HTML {
             T4.click()
             setTimeout(() => {
                 this.OPMicS.click()
+                if(x){
+                    let a = document.querySelectorAll(".kssMZb")
+                    a.forEach(e=>{
+                        e.classList.remove("kssMZb")
+                    })
+                    document.querySelector(".LvMmxf").classList.add("FTMc0c")
+                    let a2 = HTML.OPMic.querySelector(".IYwVEf")
+                    a2.classList.remove("HotEze")
+                    HTML.OPMic.classList.add("jx06rrr")
+                    console.log(a,a2)
+                }
             }, 300);
         }, 500);
     }
-    closeMic(){
+    closeMic() {
         if (this.OPMic.getAttribute('data-is-muted') == "false") {
             this.OPMic.click()
         }
         this.OPMicS.click()
         let T1 = document.querySelector(".EDp2nc")
+        if (!T1) {
+            return
+        }
         setTimeout(() => {
             let T2 = T1.firstChild.querySelectorAll("[jsname='K4r5Ff']")
-            let T4 =  T2[0].parentNode
+            let T4 = T2[0].parentNode
             T4.click()
             setTimeout(() => {
                 this.OPMicS.click()
             }, 300);
-            let T3 = Array.from(T2).map(e=>{
+            let T3 = Array.from(T2).map(e => {
                 return e.textContent
             })
             this.A_S = T3
-            console.log(this.A_S)
+            // console.log(this.A_S)
         }, 500);
     }
-    openCam(name){
+    openCam(name,x=false) {
         console.log(this.OPCam.parentNode.nextSibling.firstChild)
         if (this.OPCam.getAttribute('data-is-muted') == "true") {
             this.OPCam.click()
         }
         this.OPCamS.click()
         let T1 = document.querySelector(".bifLQe")
+        if (!T1) {
+            return
+        }
         setTimeout(() => {
             let T2 = T1.querySelectorAll("[jsname='K4r5Ff']")
-            let T3 = Array.from(T2).find(e=>{
+            let T3 = Array.from(T2).find(e => {
                 // console.log(e.textContent)
                 return e.textContent == name
             })
@@ -237,10 +261,17 @@ class _HTML {
             T4.click()
             setTimeout(() => {
                 this.OPCamS.click()
+                if (x) {
+                    document.querySelector(".aGWPv").style.display = "none"
+                    let a = HTML.OPCam.querySelector(".IYwVEf")
+                    a.classList.remove("HotEze")
+                    HTML.OPCam.classList.add("jx06rrr")
+                    console.log(a)
+                }
             }, 300);
         }, 500);
     }
-    closeCam(){
+    closeCam() {
         if (this.OPCam.getAttribute('data-is-muted') == "false") {
             this.OPCam.click()
         }
@@ -248,16 +279,29 @@ class _HTML {
         let T1 = document.querySelector(".bifLQe")
         setTimeout(() => {
             let T2 = T1.querySelectorAll("[jsname='K4r5Ff']")
-            let T4 =  T2[0].parentNode
+            let T4 = T2[0].parentNode
             T4.click()
             setTimeout(() => {
                 this.OPCamS.click()
             }, 300);
-            let T3 = Array.from(T2).map(e=>{
+            let T3 = Array.from(T2).map(e => {
                 return e.textContent
             })
             this.A_V = T3
+            document.querySelector(".aGWPv").style.display = "block"
+            HTML.OPCam.classList.remove("jx06rrr")
         }, 500);
+    }
+    closeAll(a = false) {
+        setTimeout(() => {
+            this.closeMic()
+        }, 1500);
+        setTimeout(() => {
+            this.closeCam()
+            if (a) {
+                postST()
+            }
+        }, 3000);
     }
 }
 
@@ -378,10 +422,10 @@ function CheckMsg(Msg, messenger) {
 function check2(html) {
     let from = html.querySelector('.RgDGVe')
     let msg = html.querySelector('.LpG93b')
-    
+
     const fromstate = CheckMessenger(from.innerText)
     const msgstate = CheckMsg(msg.innerText, from.innerText)
-    console.log(from,msg,fromstate,msgstate)
+    console.log(from, msg, fromstate, msgstate)
     switch (fromstate) {
         case 0:
             html.style.display = "block"
@@ -440,7 +484,7 @@ function check(html) {
 function postST() {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
-    const raw = JSON.stringify({ people: GetAllPeople() ,A_S:HTML.A_S,A_V:HTML.A_V})
+    const raw = JSON.stringify({ people: GetAllPeople(), A_S: HTML.A_S, A_V: HTML.A_V })
     console.log(HTML.A_S)
     // const raw =  JSON.stringify([1,3,4])
     console.log(raw)
@@ -453,6 +497,34 @@ function postST() {
     fetch("http://127.0.0.1:5000/get", requestOptions)
         .then((response) => response.text())
         .then((result) => console.log(result))
+        .catch((error) => console.error(error));
+}
+function is_No_Entering() {
+    var requestOptions = {
+        method: 'GET',
+        redirect: 'follow'
+    };
+    fetch("http://127.0.0.1:5000/can_enter", requestOptions)
+        .then((response) => response.text())
+        .then((result) => {
+            console.log(result)
+            if (result == "T") {
+                let c = 0
+                let temp0 = setInterval(() => {
+                    c++
+                    let t = document.querySelector('[jsname="Qx7uuf"]')
+                    // t.click()
+                    if (t || c > 9) {
+                        if (t) {
+                            t.addEventListener("click", () => {
+                                location.href = "https://support.google.com/meet/answer/10620582?hl=zh-Hant&ref_topic=14074340&sjid=18168767818580573851-AP";
+                            });
+                        }
+                        clearInterval(temp0)
+                    }
+                }, 500);
+            }
+        })
         .catch((error) => console.error(error));
 }
 // ------------------------------------------------------------------------------------
@@ -494,13 +566,15 @@ const Listencallback2 = (mutationsList, observer) => {
 }
 
 const HTML = new _HTML()
-HTML.init()
+window.onload = () => {
+    HTML.init()
+}
 function start() {
     const config = { attributes: true, childList: true, subtree: true };
     const callback = Listencallback
     const observer = new MutationObserver(callback);
     observer.observe(HTML.MsgBoxFather, config);
-    
+
     const config2 = { attributes: true, childList: true, subtree: true };
     const callback2 = Listencallback2
     const observer2 = new MutationObserver(callback2);
@@ -511,12 +585,7 @@ function start() {
 
     setTimeout(() => {
         GetAllPeople()
-        setTimeout(() => {
-            HTML.closeMic()
-        }, 1500);
-        setTimeout(() => {
-            HTML.closeCam()
-        }, 3000);
+        HTML.closeAll()
     }, 1000);
 
     var requestOptions = {
@@ -538,22 +607,51 @@ function start() {
                             break;
                         case "GET1":
                             postST()
-                            setTimeout(() => {
-                                HTML.closeMic()
-                            }, 1500);
-                            setTimeout(() => {
-                                HTML.closeCam()
-                                postST()
-                            }, 3000);
+                            HTML.closeAll(true)
                             break;
                         case "FUN":
                             HTML[m.FUN]()
                             break;
+                        case "SV":
+                            if (m.audience == "else") {
+                                if (HTML.isBusy) {
+                                    setTimeout(() => {
+                                        HTML[m.FUN](m.name,true)
+                                    }, 1500);
+                                } else {
+                                    HTML[m.FUN](m.name,true)
+                                    HTML.isBusy = true
+                                    setTimeout(() => {
+                                        HTML.isBusy = false
+                                    }, 1500);
+                                }
+                            }
+                            break
                         case "sound":
-                            HTML.openMic(m.name)
+                            if (HTML.isBusy) {
+                                setTimeout(() => {
+                                    HTML.openMic(m.name)
+                                }, 1500);
+                            } else {
+                                HTML.openMic(m.name)
+                                HTML.isBusy = true
+                                setTimeout(() => {
+                                    HTML.isBusy = false
+                                }, 1500);
+                            }
                             break;
                         case "video":
-                            HTML.openCam(m.name)
+                            if (HTML.isBusy) {
+                                setTimeout(() => {
+                                    HTML.openCam(m.name)
+                                }, 1500);
+                            } else {
+                                HTML.openCam(m.name)
+                                HTML.isBusy = true
+                                setTimeout(() => {
+                                    HTML.isBusy = false
+                                }, 1500);
+                            }
                             break;
                         default:
                             break;

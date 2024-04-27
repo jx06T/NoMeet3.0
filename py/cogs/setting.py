@@ -79,17 +79,22 @@ class setting(cog_class):
             
     @commands.Cog.listener()
     async def on_interaction(self, interaction: discord.Interaction):
-        if interaction.data.get("custom_id") in ["DEVICE_NAME_S","DEVICE_NAME_V","No_Entering"]:
-            await interaction.response.send_message(content=interaction.data.get("custom_id")+"："+interaction.data.get("values")[0])
-            R = update_env_variable(interaction.data.get("custom_id"),interaction.data.get("values")[0])
+        IDD = interaction.data.get("custom_id")
+        if IDD in ["DEVICE_NAME_S","DEVICE_NAME_V","No_Entering"]:
+            await interaction.response.send_message(content=IDD+"："+interaction.data.get("values")[0])
+            R = update_env_variable(IDD,interaction.data.get("values")[0])
             self.bot.dispatch("ENV_update",R)
 
-        elif interaction.data.get("custom_id") == "reget_Ds":
+        elif IDD == "reget_Ds":
             await interaction.response.send_message(content="ok")
             self.AllMsg.append({"type":"GET1","from":interaction.user.name})
             self.bot.dispatch("msg_updated", self.AllMsg)
             await asyncio.sleep(2)
             self.bot.dispatch("get_DS")
+        elif IDD == "No_Entering" :
+            await interaction.response.send_message(content=IDD+"："+interaction.data.get("value"))
+            R = update_env_variable(IDD,interaction.data.get("value"))
+            self.bot.dispatch("ENV_update",R)
 
 
 

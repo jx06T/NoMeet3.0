@@ -4,7 +4,7 @@ from pydub import AudioSegment
 class SoundPlayer:
     def __init__(self, devicename = None):
         self.devicename = devicename
-        self.file = None
+        self.file_path = None
         self.R = ''
         try:
             pygame.mixer.init(devicename=self.devicename)
@@ -40,9 +40,9 @@ class SoundPlayer:
 
     def change_file(self, new_file):
         self.stop()
-        self.file = new_file
+        self.file_path = new_file
         pygame.mixer.init(devicename=self.devicename)
-        self.sound = pygame.mixer.Sound(self.file)
+        self.sound = pygame.mixer.Sound(self.file_path)
 
     def change_devicename(self, new_devicename):
         self.stop()
@@ -58,7 +58,9 @@ class SoundPlayer:
 
 if __name__=='__main__':
     # 使用範例
-    player = SoundPlayer()
+    # player = SoundPlayer()
+    player = SoundPlayer(devicename='Line 1 (Virtual Audio Cable)')
+
     player.change_file(r"D:\Document_J\code\NoMeet\py\sound\15_12_HDRyan_B_AY_Ryan_B_AY_Yang_Lao_San_Never_again.wav")
     player.play()  # 播放音訊檔
     time.sleep(3)

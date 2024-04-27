@@ -89,23 +89,24 @@ class fun(cog_class):
     
     @commands.Cog.listener()
     async def on_interaction(self, interaction: discord.Interaction):
-        if interaction.data.get("custom_id") == "member":
+        IDD = interaction.data.get("custom_id")
+        if IDD == "member":
             self.AllMsg.append({"type":"GET","from":interaction.user.name})
             self.bot.dispatch("msg_updated", self.AllMsg)
             await interaction.response.edit_message(content="Waiting..."+str(math.floor(time.time()*10)))
             await asyncio.sleep(1.5)
             self.bot.dispatch("get_member")
             
-        elif interaction.data.get("custom_id") == "GRoomCode":
+        elif IDD == "GRoomCode":
             await interaction.response.edit_message(content="Waiting..."+str(math.floor(time.time()*10)))
             self.bot.dispatch("get_room_code")
 
-        elif interaction.data.get("custom_id") in ["MainRoomCodde"]:
+        elif IDD in ["MainRoomCodde"]:
             update_env_variable("MainRoomCodde",interaction.data.get("values")[0])
             await interaction.response.send_message(content ="ok")
             
-        elif interaction.data.get("custom_id") in["HoldHandx10","HoldHand","reload","quit","FakeQuit","SendEmoji"]:
-            self.AllMsg.append({"type":"FUN","FUN":interaction.data.get("custom_id") ,"from":interaction.user.name})
+        elif IDD in["HoldHandx10","HoldHand","reload","quit","FakeQuit","SendEmoji"]:
+            self.AllMsg.append({"type":"FUN","FUN":IDD ,"from":interaction.user.name})
             self.bot.dispatch("msg_updated", self.AllMsg)
             await interaction.response.edit_message(content="OK..."+str(math.floor(time.time()*10)))
             

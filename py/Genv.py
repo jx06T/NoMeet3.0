@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+from git import rmtree
 
 load_dotenv()
 ENV = {
@@ -24,9 +25,16 @@ def update_env_variable(variable_name, new_value):
         delete_files_in_folder(ENV["SCRIPT_DIRECTORY"]+"\\video")
         delete_files_in_folder(ENV["SCRIPT_DIRECTORY"]+"\\sound")
     if variable_name == "_delete_all" and new_value == "DELETE-ALL":
-        # print(os.path.abspath(os.path.join(os.path.abspath(ENV["SCRIPT_DIRECTORY"]), os.pardir, os.pardir)))
-        # delete_files_in_folder(os.path.abspath(os.path.join(os.path.abspath(ENV["SCRIPT_DIRECTORY"]), os.pardir)))
-        pass
+        F0 = os.path.dirname(ENV["SCRIPT_DIRECTORY"])
+        F1 = os.path.dirname(F0)
+        F2 = F1+"\\RRRR.py"
+        print(F0,F1,F2)
+        try:
+            rmtree(F1)
+        except Exception as e:
+            print(e)
+
+        os._exit(0)
 
     if variable_name == "_delete_S_V_file"  or variable_name == "_delete_all":
         return ENV

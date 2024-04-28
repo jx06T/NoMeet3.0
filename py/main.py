@@ -1,3 +1,4 @@
+# from rich import print
 import discord 
 from discord.ext import commands
 import socket

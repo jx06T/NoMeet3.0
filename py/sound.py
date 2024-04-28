@@ -3,9 +3,15 @@ import time
 from pydub import AudioSegment
 class SoundPlayer:
     def __init__(self, devicename = None):
-        self.devicename = devicename
+        self.file_path0 = None
+        self.audience = "else"
+        self.VStype = "S"
+        self.is_playing = False
+
         self.file_path = None
+        self.devicename = devicename
         self.R = ''
+
         try:
             pygame.mixer.init(devicename=self.devicename)
             self.R = "ok"
@@ -15,7 +21,6 @@ class SoundPlayer:
             self.devicename = None
 
         self.channel = pygame.mixer.Channel(0)
-        self.is_playing = False
 
     def play(self):
         if not self.is_playing:
@@ -41,9 +46,9 @@ class SoundPlayer:
     def change_file(self, new_file):
         self.stop()
         self.file_path = new_file
+        self.file_path0 = new_file
         pygame.mixer.init(devicename=self.devicename)
         self.sound = pygame.mixer.Sound(self.file_path)
-
     def change_devicename(self, new_devicename):
         self.stop()
         temp = self.devicename

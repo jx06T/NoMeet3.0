@@ -8,3 +8,13 @@
 .jx06rrr{
     background-color: #ea493c !important;
 }
+
+.jx06ddd{
+    display: none !important;
+    /* background-color: #ea493c !important; */
+}
+.jx06ff::before,.jx06ff::after{
+    display: none !important;
+    height:0%;
+    width: 0%;
+}

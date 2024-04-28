@@ -43,7 +43,9 @@
     "content_scripts": [
         {
             "js": [
-                "content.js"
+                "html.js",
+                "content.js",
+                "test.js"
             ],
             "css": [
                 "content.css"

@@ -7,19 +7,24 @@ import threading
 class VideoPlayer:
     def __init__(self, width=1920, height=1080,device="Unity Video Capture"):
         self.device = device
-        self.paused = False
+        self.is_playing = True
         self.sound = False
         self.s = False
+        self.VStype = "V"
         self.playback_thread = None
+        self.audience = "else"
+
         try:
             self.virtual_camera = pyvirtualcam.Camera(device = self.device,width=width, height=height, fps=30)
         except:
             self.virtual_camera = pyvirtualcam.Camera(width=width, height=height, fps=30)
 
         self.file_path = None
+        self.file_path0 = None
 
     def change_file(self, video_path):
         self.file_path = video_path
+        self.file_path0 = video_path
         self.cap = cv2.VideoCapture(video_path)
         self.fps = self.cap.get(cv2.CAP_PROP_FPS)
         if self.fps == 0:
@@ -39,7 +44,7 @@ class VideoPlayer:
     def play_video(self):
         last_frame = None
         while True:
-            if not self.paused:
+            if self.is_playing:
                 ret, frame = self.cap.read()
                 if ret:
                     
@@ -70,10 +75,10 @@ class VideoPlayer:
             #     break
 
     def pause(self):
-        self.paused = True
+        self.is_playing = False
 
     def resume(self):
-        self.paused = False
+        self.is_playing = True
 
     def release_camera(self):
         if hasattr(self, 'cap'):

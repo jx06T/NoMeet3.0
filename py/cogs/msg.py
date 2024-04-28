@@ -1,3 +1,4 @@
+# from rich import print
 import discord
 from discord import app_commands
 from discord.ext import commands
@@ -51,8 +52,13 @@ class msg(cog_class):
             print("下载失败，HTTP 状态码:", response.status_code)
             return False
 
-    def get_view_forPlay(self,t,v,now):
+    def get_view_forPlay(self,player):
+        v = player.VStype
+        t = player.is_playing
+        now = player.file_path0
+        audience = player.audience
         file_name = os.path.basename(now)
+        print("dsa",v,t,player,now,file_name)
         view = discord.ui.View()
         view.add_item(
             discord.ui.Button(
@@ -74,14 +80,22 @@ class msg(cog_class):
                 [discord.SelectOption(label=D) for D in self.list_files(directory)]
             )
         )
+        view.add_item(
+            discord.ui.Select(custom_id="asnkjawn",disabled=True, placeholder=audience, options=
+                [discord.SelectOption(label="else"),
+                discord.SelectOption(label="me"),
+                discord.SelectOption(label="both")]
+            )
+        )
         return view    
 
     @app_commands.command(name="sound", description="說話")
     @discord.app_commands.describe(audio_file=':')
+    @discord.app_commands.describe(link=':')
     @discord.app_commands.describe(audio_text=':')
     @discord.app_commands.describe(audience=':')
     @discord.app_commands.describe(force=':')
-    async def Csound(self,interaction: discord.Interaction,audio_file: discord.Attachment= None, audio_text:str ="",audience:Literal['else', 'me','both'] = "else",force:Literal['T', 'F'] = "F"):
+    async def Csound(self,interaction: discord.Interaction,audio_file: discord.Attachment= None, link:str = "$",audio_text:str ="",audience:Literal['else', 'me','both'] = "else",force:Literal['T', 'F'] = "F"):
         ok = True
         if audio_text:
             tts = gTTS(audio_text, lang='zh-tw')
@@ -93,45 +107,60 @@ class msg(cog_class):
             with open(ENV["SCRIPT_DIRECTORY"]+"\\sound\\"+filename, "wb") as f:
                 await audio_file.save(f)
         else:
+            if link == "$":
+                link = self.Lastfiles[-1]
             filename = "jxeeee"+str(math.floor(time.time()*10))[8:]+".wav"
-            ok = self.download_file(self.Lastfiles[-1], ENV["SCRIPT_DIRECTORY"]+"\\sound\\"+filename)
+            ok = self.download_file(link, ENV["SCRIPT_DIRECTORY"]+"\\sound\\"+filename)
             if not ok:
                 filename = "蝦.txt"
+                if not link == "$"and not link == "":
+                    filename = link
+                    ok = check_file_in_folder(ENV["SCRIPT_DIRECTORY"]+"\\sound", filename)
 
-        view = self.get_view_forPlay(False,"S",filename)
+        self.playerS.file_path0 = filename
+        self.playerS.is_playing = ok
+        view = self.get_view_forPlay(self.playerS)
         await interaction.response.send_message(content=filename+"\n"+self.playerS.R, view=view)
 
         self.AllMsg.append({"type":"SV","FUN": "openMic", "from":interaction.user.name, "audience":audience, "file": filename, "force": force,"name":ENV["DEVICE_NAME_S"]})
         self.bot.dispatch("msg_updated", self.AllMsg)
-
+        self.playerS.audience = audience
         if ok:
             self.playerS.change_file(ENV["SCRIPT_DIRECTORY"]+"\\sound\\"+filename)
             self.playerS.play()
-            self.playerS.pause()
+            # self.playerS.pause()
 
     @app_commands.command(name="video", description="鏡頭")
     @discord.app_commands.describe(video_file=':')
+    @discord.app_commands.describe(link=':')
     @discord.app_commands.describe(sound=':')
     @discord.app_commands.describe(audience=':')
     @discord.app_commands.describe(force=':')
-    async def Cvideo(self,interaction: discord.Interaction,video_file: discord.Attachment= None,sound:Literal['T', 'F'] = "F",audience:Literal['else', 'me','both'] = "else",force:Literal['T', 'F'] = "F"):
+    async def Cvideo(self,interaction: discord.Interaction,video_file: discord.Attachment= None,link:str = "$",sound:Literal['T', 'F'] = "F",audience:Literal['else', 'me','both'] = "else",force:Literal['T', 'F'] = "F"):
         ok = True
         if video_file:
             filename = video_file.filename
             with open(ENV["SCRIPT_DIRECTORY"]+"\\video\\"+filename, "wb") as f:
                 await video_file.save(f)
         else:
+            if link == "$":
+                link = self.Lastfiles[-1]
             filename = "jxeeee"+str(math.floor(time.time()*10))[8:]+".mp4"
-            filename_match = re.search(r'/([^/]+(\.mp4|\.mov|\.mp3|\.avi|\.mkv))\?', self.Lastfiles[-1])
+            filename_match = re.search(r'/([^/]+(\.mp4|\.mov|\.mp3|\.avi|\.mkv))\?', link)
             if filename_match:
                 filename = filename_match.group(1)
             else:
                 pass
-            ok = self.download_file(self.Lastfiles[-1], ENV["SCRIPT_DIRECTORY"]+"\\video\\"+filename)
+            ok = self.download_file(link, ENV["SCRIPT_DIRECTORY"]+"\\video\\"+filename)
             if not ok:
                 filename = "蝦.txt"
+                if not link == "$" and not link == "":
+                    filename = link
+                    ok = check_file_in_folder(ENV["SCRIPT_DIRECTORY"]+"\\video", filename)
                 
-        view = self.get_view_forPlay(ok,"V",filename)
+        self.playerV.is_playing = ok
+        self.playerV.file_path0 = filename
+        view = self.get_view_forPlay(self.playerV)
         await interaction.response.send_message(content=filename, view=view)
         
         if ok:
@@ -139,17 +168,17 @@ class msg(cog_class):
             # self.playerV.start_virtual_camera()
             
         self.playerV.sound = False
+        self.playerV.audience = audience
         self.AllMsg.append({"type":"SV","FUN": "openCam", "from":interaction.user.name, "audience":audience,"file": filename, "force": force,"name":ENV["DEVICE_NAME_V"]})
         if sound == 'T':
+            self.AllMsg.append({"type":"SV","FUN": "openMic", "from":interaction.user.name, "audience":audience,"file": filename, "force": force,"name":ENV["DEVICE_NAME_S"]})
             if ok:
                 filename2 = os.path.splitext(filename)[0]+".wav"
-                print(filename2)
+                print(filename2,"f2")
                 self.convert_mp4_to_wav(ENV["SCRIPT_DIRECTORY"]+"\\video\\"+filename, ENV["SCRIPT_DIRECTORY"]+"\\sound\\"+filename2)
-                self.AllMsg.append({"type":"SV","FUN": "openMic", "from":interaction.user.name, "audience":audience,"file": filename, "force": force,"name":ENV["DEVICE_NAME_S"]})
-                # self.AllMsg.append({"type": "sound", "from":interaction.user.name, "file": filename2, "force": force,"name":ENV["DEVICE_NAME_S"]})
-
                 self.playerS.change_file(ENV["SCRIPT_DIRECTORY"]+"\\sound\\"+filename2)
                 self.playerS.play()
+            self.playerS.audience = audience
             self.playerV.sound = True
 
         self.bot.dispatch("msg_updated", self.AllMsg)
@@ -172,10 +201,11 @@ class msg(cog_class):
                 self.playerS.pause()
             else:
                 self.playerS.unpause()
-                self.AllMsg.append({"type": "sound", "from":interaction.user.name,"name":ENV["DEVICE_NAME_S"]})
+                self.AllMsg.append({"type":"SV","FUN": "openMic", "from":interaction.user.name, "audience":self.playerS.audience, "file":self.playerS.file_path0 ,"name":ENV["DEVICE_NAME_S"]})
+                # self.AllMsg.append({"type": "sound", "from":interaction.user.name,"name":ENV["DEVICE_NAME_S"]})
                 self.bot.dispatch("msg_updated", self.AllMsg)
 
-            await interaction.response.edit_message(view=self.get_view_forPlay(self.playerS.is_playing,"S",self.playerS.file_path))
+            await interaction.response.edit_message(view=self.get_view_forPlay(self.playerS))
             
         elif IDD=="finishS":
             self.AllMsg.append({"type":"FUN","FUN":"closeMic","from":interaction.user.name})
@@ -184,20 +214,22 @@ class msg(cog_class):
             await interaction.response.edit_message(content=interaction.message.content+"X")
 
         elif IDD == "pauseV":
-            if not self.playerV.paused:
+            if  self.playerV.is_playing:
                 self.playerV.pause()
                 if self.playerV.sound:
                     self.playerS.pause()
             else:
                 self.playerV.resume()
-                self.AllMsg.append({"type": "video", "from":interaction.user.name,"name":ENV["DEVICE_NAME_V"]})
+                self.AllMsg.append({"type":"SV","FUN": "openCam", "from":interaction.user.name, "audience":self.playerV.audience, "file":self.playerV.file_path0 ,"name":ENV["DEVICE_NAME_V"]})
+                # self.AllMsg.append({"type": "video", "from":interaction.user.name,"name":ENV["DEVICE_NAME_V"]})
                 if self.playerV.sound:
                     self.playerS.unpause()
-                    self.AllMsg.append({"type": "sound", "from":interaction.user.name,"name":ENV["DEVICE_NAME_S"]})
+                    self.AllMsg.append({"type":"SV","FUN": "openMic", "from":interaction.user.name, "audience":self.playerS.audience, "file":self.playerS.file_path0 ,"name":ENV["DEVICE_NAME_S"]})
+                    # self.AllMsg.append({"type": "sound", "from":interaction.user.name,"name":ENV["DEVICE_NAME_S"]})
 
                 self.bot.dispatch("msg_updated", self.AllMsg)
                 
-            await interaction.response.edit_message(view=self.get_view_forPlay(not self.playerV.paused,"V",self.playerV.file_path))
+            await interaction.response.edit_message(view=self.get_view_forPlay(self.playerV))
 
         elif IDD=="finishV":
             self.bot.dispatch("msg_updated", self.AllMsg)
@@ -214,23 +246,25 @@ class msg(cog_class):
             ff = interaction.data.get("values")[0]
             self.playerS.change_file(ENV["SCRIPT_DIRECTORY"]+"\\sound\\"+ff)
             self.playerS.play()
-            await interaction.response.edit_message(content=ff,view=self.get_view_forPlay(not self.playerS.is_playing,"S",ff))
+            await interaction.response.edit_message(content=ff,view=self.get_view_forPlay(self.playerS))
         elif IDD == "mediaV":
             ff = interaction.data.get("values")[0]
             print("ff",ff)
             self.playerV.change_file(ENV["SCRIPT_DIRECTORY"]+"\\video\\"+ff)
             # self.playerV.start_virtual_camera()
-            await interaction.response.edit_message(content=ff,view=self.get_view_forPlay(not self.playerV.paused,"V",ff))
-            self.AllMsg.append({"type": "video", "from":interaction.user.name,"name":ENV["DEVICE_NAME_V"]})
+            await interaction.response.edit_message(content=ff,view=self.get_view_forPlay(self.playerV))
+            # self.AllMsg.append({"type": "video", "from":interaction.user.name,"name":ENV["DEVICE_NAME_V"]})
+            self.AllMsg.append({"type":"SV","FUN": "openCam", "from":interaction.user.name, "audience":self.playerV.audience, "file":self.playerV.file_path0 ,"name":ENV["DEVICE_NAME_V"]})
 
             if self.playerV.sound:
                 filename2 = os.path.splitext(ff)[0]+".wav"
-                print(filename2)
+                print(filename2,"f2")
                 self.convert_mp4_to_wav(ENV["SCRIPT_DIRECTORY"]+"\\video\\"+ff, ENV["SCRIPT_DIRECTORY"]+"\\sound\\"+filename2)
                 self.playerS.change_file(ENV["SCRIPT_DIRECTORY"]+"\\sound\\"+filename2)
                 self.playerS.play()
                 self.playerS.unpause()
-                self.AllMsg.append({"type": "sound", "from":interaction.user.name,"name":ENV["DEVICE_NAME_S"]})
+                self.AllMsg.append({"type":"SV","FUN": "openMic", "from":interaction.user.name, "audience":self.playerS.audience, "file":self.playerS.file_path0 ,"name":ENV["DEVICE_NAME_S"]})
+                # self.AllMsg.append({"type": "sound", "from":interaction.user.name,"name":ENV["DEVICE_NAME_S"]})
 
             self.bot.dispatch("msg_updated", self.AllMsg)
                 
@@ -255,6 +289,15 @@ class msg(cog_class):
     
     # def unload(self):
     #     self.playerV.release_camera()
+
+def check_file_in_folder(folder_path, file_name):
+    file_path = os.path.join(folder_path, file_name)
+    if os.path.exists(file_path):
+        print(f"File '{file_name}' exists in folder '{folder_path}'.")
+        return True
+    else:
+        print(f"File '{file_name}' does not exist in folder '{folder_path}'.")
+        return False
 
 async def setup(bot):
     await bot.add_cog(msg(bot))

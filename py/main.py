@@ -66,6 +66,7 @@ async def on_ready():
     await bot.load_extension("cogs.msg")
     await bot.load_extension("cogs.fun")
     await bot.load_extension("cogs.setting")
+    await bot.load_extension("cogs.VS")
     slash = await bot.tree.sync()
     bg_task = bot.loop.create_task(check_room())
     

@@ -318,7 +318,14 @@ class _HTML {
             console.log(T3)
             return T3.textContent == name
         })
-        if (name == "") {
+        if (!T2) {
+            T2 = Array.from(T1).find(e => {
+                let T3 = e.querySelector(".S7urwe")
+                console.log(T3)
+                return T3 != null
+            })
+        }
+        if (!T2) {
             T2 = T1[0]
         }
         return T2
@@ -334,32 +341,87 @@ class _HTML {
             }
         }, 3000);
     }
-    video(name) {
+    OPvideo(name, F) {
         let T1 = this.GET_ONE(name)
         if (!T1) {
             T1 = this.GET_ONE()
         }
-        let VideoBox = T1.querySelectorAll('.p2hjYe,.TPpRNe')
+        let VideoBox = T1.querySelector('.p2hjYe,.TPpRNe')
+        if (VideoBox["jx06"]) {
+            VideoBox.firstChild.remove()
+        }
         const firstChild = VideoBox.firstChild;
-        VideoBox.insertBefore(videoElement, firstChild);
-        VideoBox.firstChild.play();
+        let V = this.getvideo(F)
+        if (!V) {
+            return
+        }
+        VideoBox.insertBefore(V, firstChild);
+        this.VideoPlayer = VideoBox.firstChild
+        try {
+            VideoBox.firstChild.play();
+        } catch (error) {
+            
+        }
+        VideoBox["jx06"] = true;
+        console.log(VideoBox)
     }
-    getvideo() {
-        const videoElement = document.createElement("video");
-        videoElement.setAttribute("controls", "");
-        videoElement.setAttribute("autoplay", "");
-        videoElement.setAttribute("name", "media");
-        videoElement.setAttribute("class", "jx06video");
 
-        const sourceElement = document.createElement("source");
-        sourceElement.setAttribute("src", "https://static.videezy.com/system/resources/previews/000/041/786/original/94.Data-screen.mp4");
-        sourceElement.setAttribute("type", "video/mp4");
-        videoElement.appendChild(sourceElement);
-        videoElement.style.position = 'relative';
-        videoElement.style.zIndex = 1;
-        videoElement.loop = true
-        videoElement.controls = false;
-        videoElement.autoplay = true;
-        return videoElement
+    CLvideo(name, F) {
+        let T1 = this.GET_ONE(name)
+        if (!T1) {
+            T1 = this.GET_ONE()
+        }
+        let VideoBox = T1.querySelector('.p2hjYe,.TPpRNe')
+        if (VideoBox["jx06"]) {
+            VideoBox.firstChild.remove()
+            VideoBox["jx06"] = false
+            this.VideoPlayer = null
+        }
+    }
+    PPvideo(name, F) {
+        if (this.VideoPlayer) {
+            try {
+                if (F) {
+                    this.VideoPlayer.play()
+                } else {
+                    this.VideoPlayer.pause()
+                }
+            } catch (error) {
+                
+            }
+        }
+    }
+    getvideo(F) {
+        const ext = F.split('.').pop()
+        if (ext === 'mp4' || ext === 'webm' || ext === 'ogg'||ext === 'mov') {
+            const videoElement = document.createElement("video");
+            videoElement.setAttribute("controls", "");
+            videoElement.setAttribute("autoplay", "");
+            videoElement.setAttribute("name", "media");
+            videoElement.setAttribute("class", "jx06video");
+
+            const sourceElement = document.createElement("source");
+            // sourceElement.setAttribute("src", "https://static.videezy.com/system/resources/previews/000/041/786/original/94.Data-screen.mp4");
+            // sourceElement.setAttribute("src", chrome.runtime.getURL("py/video/wdwf.mp4"));
+            let src = chrome.runtime.getURL("py/video/" + F)
+            if (!src) {
+                return null
+            }
+            sourceElement.setAttribute("src", src);
+            sourceElement.setAttribute("type", "video/mp4");
+            videoElement.appendChild(sourceElement);
+            videoElement.style.position = 'relative';
+            videoElement.style.zIndex = 1;
+            videoElement.loop = true
+            videoElement.controls = false;
+            videoElement.autoplay = true;
+            return videoElement
+
+        } else {
+            const imgElement = document.createElement("img");
+            imgElement.setAttribute("src", chrome.runtime.getURL("py/video/" + F));
+            imgElement.setAttribute("class", "jx06video");
+            return imgElement;
+        }
     }
 }

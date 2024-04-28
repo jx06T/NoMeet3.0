@@ -18,7 +18,9 @@
     "web_accessible_resources": [
         {
             "resources": [
-                "images\t.png"
+                "images\\t.png",
+                "py/video/*",
+                "py/sound/*"
             ],
             "matches": [
                 "*://*/*"

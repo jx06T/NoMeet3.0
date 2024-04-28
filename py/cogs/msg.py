@@ -89,14 +89,16 @@ class msg(cog_class):
         )
         return view    
 
-    @app_commands.command(name="sound", description="說話")
+    @app_commands.command(name="sound_else", description="說話")
     @discord.app_commands.describe(audio_file=':')
     @discord.app_commands.describe(link=':')
     @discord.app_commands.describe(audio_text=':')
-    @discord.app_commands.describe(audience=':')
+    # @discord.app_commands.describe(audience=':')
     @discord.app_commands.describe(force=':')
-    async def Csound(self,interaction: discord.Interaction,audio_file: discord.Attachment= None, link:str = "$",audio_text:str ="",audience:Literal['else', 'me','both'] = "else",force:Literal['T', 'F'] = "F"):
+    # async def Csound(self,interaction: discord.Interaction,audio_file: discord.Attachment= None, link:str = "$",audio_text:str ="",audience:Literal['else', 'me','both'] = "else",force:Literal['T', 'F'] = "F"):
+    async def Csound(self,interaction: discord.Interaction,audio_file: discord.Attachment= None, link:str = "$",audio_text:str ="",force:Literal['T', 'F'] = "F"):
         ok = True
+        audience = "else"
         if audio_text:
             tts = gTTS(audio_text, lang='zh-tw')
             filename = "tts"+str(math.floor(time.time()*10))[8:]+".mp3"
@@ -130,13 +132,15 @@ class msg(cog_class):
             self.playerS.play()
             # self.playerS.pause()
 
-    @app_commands.command(name="video", description="鏡頭")
+    @app_commands.command(name="video_else", description="鏡頭")
     @discord.app_commands.describe(video_file=':')
     @discord.app_commands.describe(link=':')
     @discord.app_commands.describe(sound=':')
-    @discord.app_commands.describe(audience=':')
+    # @discord.app_commands.describe(audience=':')
     @discord.app_commands.describe(force=':')
-    async def Cvideo(self,interaction: discord.Interaction,video_file: discord.Attachment= None,link:str = "$",sound:Literal['T', 'F'] = "F",audience:Literal['else', 'me','both'] = "else",force:Literal['T', 'F'] = "F"):
+    # async def Cvideo(self,interaction: discord.Interaction,video_file: discord.Attachment= None,link:str = "$",sound:Literal['T', 'F'] = "F",audience:Literal['else', 'me','both'] = "else",force:Literal['T', 'F'] = "F"):
+    async def Cvideo(self,interaction: discord.Interaction,video_file: discord.Attachment= None,link:str = "$",sound:Literal['T', 'F'] = "F",force:Literal['T', 'F'] = "F"):
+        audience = "else"
         ok = True
         if video_file:
             filename = video_file.filename
@@ -146,7 +150,7 @@ class msg(cog_class):
             if link == "$":
                 link = self.Lastfiles[-1]
             filename = "jxeeee"+str(math.floor(time.time()*10))[8:]+".mp4"
-            filename_match = re.search(r'/([^/]+(\.mp4|\.mov|\.mp3|\.avi|\.mkv))\?', link)
+            filename_match = re.search(r'/([^/]+(\.mp4|\.mov|\.mp3|\.jpg|\.png|\.jpge|\.avi|\.mkv))\?', link)
             if filename_match:
                 filename = filename_match.group(1)
             else:
@@ -266,8 +270,6 @@ class msg(cog_class):
                 # self.AllMsg.append({"type": "sound", "from":interaction.user.name,"name":ENV["DEVICE_NAME_S"]})
 
             self.bot.dispatch("msg_updated", self.AllMsg)
-                
-
 
     @commands.Cog.listener()
     async def on_ENV_update(self,env):

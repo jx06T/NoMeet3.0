@@ -18,3 +18,18 @@
     height:0%;
     width: 0%;
 }
+
+.jx06video{
+    width: 100%;
+    /* object-fit: cover; */
+    object-fit: contain;
+    height: 100%;
+    border: 100% solid black; /* 黑色边框，边框宽度为2px */
+}
+#jx06audio{
+display: none;
+/* visibility:hidden */
+}
+.jx06video + video{
+    display: none;
+}

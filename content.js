@@ -318,7 +318,8 @@ function start() {
                             }
                             break
                         case "InsertVideo":
-                            HTML.video()
+                            HTML[m.FUN](m.audience,m.file)
+                            // HTML.video(m.audience)
                             console.log(56565656556)
                         default:
                             break;

@@ -7,6 +7,7 @@ window.addEventListener('keydown', function (event) {
         // count++
         // HTML.closeMic()
         // HTML.closeCam()
+        HTML.CLvideo()
     }
     if (key === '7') {
         // HTML.openMic("Line 1 (Virtual Audio Cable)")
@@ -14,6 +15,7 @@ window.addEventListener('keydown', function (event) {
         // console.log(GetAllPeople())
         // HTML.SendEmoji()
         // console.log(GetAllPeople())
+        HTML.OPvideo()
     }
 })
 

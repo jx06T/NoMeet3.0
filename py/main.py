@@ -3,7 +3,7 @@ import discord
 from discord.ext import commands
 import socket
 from Genv import ENV
-from flask import Flask, request,jsonify
+from flask import Flask, request,jsonify, send_file
 from flask_cors import CORS
 import threading
 import asyncio
@@ -185,6 +185,11 @@ def get():
 @app.route("/can_enter", methods=['GET'])
 def gett():
     return ENV["No_Entering"]
+
+# @app.route("/img/<name>", methods=['GET'])
+# def get_image(name):
+#     filename = f"static/{name}" 
+#     return send_file(filename, mimetype='image/jpeg')  
     
 if __name__=='__main__':
     DCthreads =threading.Thread(target=starDC,args=(ENV["DC_TOKEN"],))

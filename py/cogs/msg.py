@@ -165,11 +165,10 @@ class msg(cog_class):
         
         if ok:
             self.playerV.change_file(ENV["SCRIPT_DIRECTORY"]+"\\video\\"+filename)
-            # self.playerV.start_virtual_camera()
-            
         self.playerV.sound = False
         self.playerV.audience = audience
         self.AllMsg.append({"type":"SV","FUN": "openCam", "from":interaction.user.name, "audience":audience,"file": filename, "force": force,"name":ENV["DEVICE_NAME_V"]})
+
         if sound == 'T':
             self.AllMsg.append({"type":"SV","FUN": "openMic", "from":interaction.user.name, "audience":audience,"file": filename, "force": force,"name":ENV["DEVICE_NAME_S"]})
             if ok:

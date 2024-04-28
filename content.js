@@ -7,10 +7,6 @@ function GetAllPeople(option = { force: false }) {
         if (FailureCount > MaxFailureCount || option.force) {
             FailureCount = 0
         } else {
-            // if (HTML.AllPeople) {
-            //     HTML.AllPeopleList = Array.from(HTML.AllPeople.querySelectorAll(".zWGUib")).map(i => i.innerText)
-            //     return HTML.AllPeopleList
-            // }
             if (HTML.AllPeopleList) {
                 // HTML.AllPeopleList = Array.from(HTML.AllPeople.querySelectorAll(".zWGUib")).map(i => i.innerText)
                 return HTML.AllPeopleList
@@ -23,22 +19,6 @@ function GetAllPeople(option = { force: false }) {
         HTML.AllParticipants.click()
         T = true
     }
-    // if (!HTML.inputSpace || HTML.inputSpace.value != "") {
-    //     FailureCount++
-    //     if (FailureCount > MaxFailureCount || option.force) {
-    //         FailureCount = 0
-    //         T = true
-    //     } else {
-    //         if (T) {
-    //             HTML.chatroomB.click()
-    //         }
-    //         if (HTML.AllPeople) {
-    //             HTML.AllPeopleList = Array.from(HTML.AllPeople.querySelectorAll(".zWGUib")).map(i => i.innerText)
-    //             return HTML.AllPeopleList
-    //         }
-    //         return [""]
-    //     }
-    // }
     const AllPeople = document.querySelector('[class="AE8xFb OrqRRb GvcuGe goTdfd"]')
     if (AllPeople) {
         console.log(AllPeople)
@@ -337,32 +317,9 @@ function start() {
                                 }
                             }
                             break
-                        case "sound":
-                            if (HTML.isBusy) {
-                                setTimeout(() => {
-                                    HTML.openMic(m.name)
-                                }, 1500);
-                            } else {
-                                HTML.openMic(m.name)
-                                HTML.isBusy = true
-                                setTimeout(() => {
-                                    HTML.isBusy = false
-                                }, 1500);
-                            }
-                            break;
-                        case "video":
-                            if (HTML.isBusy) {
-                                setTimeout(() => {
-                                    HTML.openCam(m.name)
-                                }, 1500);
-                            } else {
-                                HTML.openCam(m.name)
-                                HTML.isBusy = true
-                                setTimeout(() => {
-                                    HTML.isBusy = false
-                                }, 1500);
-                            }
-                            break;
+                        case "InsertVideo":
+                            HTML.video()
+                            console.log(56565656556)
                         default:
                             break;
                     }

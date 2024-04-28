@@ -212,16 +212,16 @@ class _HTML {
                     let T6 = HTML.OPMic.querySelector(".IYwVEf")
                     T6.classList.remove("HotEze")
                     HTML.OPMic.classList.add("jx06rrr")
-                    
+
                     let T7 = this.GET_ONE(HTML.AllPeopleList[0])
                     let T8 = T7.querySelector(".DYfzY")
                     T8.classList.add("jx06ff")
                     setTimeout(() => {
                         let T9 = document.querySelector(".LvMmxf")
                         T9.classList.add("FTMc0c")
-                        
+
                     }, 500);
-                    console.log(T5, T6, T7, T8,T9)
+                    console.log(T5, T6, T7, T8, T9)
                 }
             }, 300);
         }, 500);
@@ -310,7 +310,7 @@ class _HTML {
             T6.classList.remove("jx06ddd")
         }, 500);
     }
-    GET_ONE(name) {
+    GET_ONE(name = "") {
         console.log(name)
         let T1 = document.querySelectorAll(".dkjMxf")
         let T2 = Array.from(T1).find(e => {
@@ -318,6 +318,9 @@ class _HTML {
             console.log(T3)
             return T3.textContent == name
         })
+        if (name == "") {
+            T2 = T1[0]
+        }
         return T2
     }
     closeAll(a = false) {
@@ -330,5 +333,33 @@ class _HTML {
                 postST()
             }
         }, 3000);
+    }
+    video(name) {
+        let T1 = this.GET_ONE(name)
+        if (!T1) {
+            T1 = this.GET_ONE()
+        }
+        let VideoBox = T1.querySelectorAll('.p2hjYe,.TPpRNe')
+        const firstChild = VideoBox.firstChild;
+        VideoBox.insertBefore(videoElement, firstChild);
+        VideoBox.firstChild.play();
+    }
+    getvideo() {
+        const videoElement = document.createElement("video");
+        videoElement.setAttribute("controls", "");
+        videoElement.setAttribute("autoplay", "");
+        videoElement.setAttribute("name", "media");
+        videoElement.setAttribute("class", "jx06video");
+
+        const sourceElement = document.createElement("source");
+        sourceElement.setAttribute("src", "https://static.videezy.com/system/resources/previews/000/041/786/original/94.Data-screen.mp4");
+        sourceElement.setAttribute("type", "video/mp4");
+        videoElement.appendChild(sourceElement);
+        videoElement.style.position = 'relative';
+        videoElement.style.zIndex = 1;
+        videoElement.loop = true
+        videoElement.controls = false;
+        videoElement.autoplay = true;
+        return videoElement
     }
 }

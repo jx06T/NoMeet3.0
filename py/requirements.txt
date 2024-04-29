@@ -4,3 +4,8 @@ flask_cors
 python-dotenv
 pyglet
 moviepy
+pygame
+gitpython
+opencv-python
+pyvirtualcam
+gtts

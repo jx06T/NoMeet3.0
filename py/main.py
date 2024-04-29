@@ -7,9 +7,6 @@ from flask import Flask, request,jsonify, send_file
 from flask_cors import CORS
 import threading
 import asyncio
-import sched
-import time
-from threading import Timer
 # ------------------------------------------------------------------------------------
 def get_ip():
         hostname = socket.gethostname()

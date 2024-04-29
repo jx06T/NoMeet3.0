@@ -1,6 +1,5 @@
 import pygame
 import time
-from pydub import AudioSegment
 class SoundPlayer:
     def __init__(self, devicename = None):
         self.file_path0 = None

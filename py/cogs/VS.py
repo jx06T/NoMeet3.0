@@ -142,7 +142,7 @@ class msgM(cog_class):
             if link == "$":
                 link = self.Lastfiles[-1]
             filename = "jxeeee"+str(math.floor(time.time()*10))[8:]+".mp4"
-            filename_match = re.search(r'/([^/]+(\.mp4|\.mov|\.mp3|\.jpg|\.png|\.jpge|\.avi|\.mkv))\?', link)
+            filename_match = re.search(r'/([^/]+(\.mp4|\.mov|\.mp3|\.jpg|\.png|\.jpeg|\.avi|\.mkv))\?', link)
             if filename_match:
                 filename = filename_match.group(1)
             else:

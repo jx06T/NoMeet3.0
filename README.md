@@ -15,13 +15,16 @@
 
 5.進入**py**資料夾執行**pip install -r requirements.txt**
 
-6.配置 **.env.example**中的[**DC_TOKEN**](https://hackmd.io/@smallshawn95/python_discord_bot_base)和[**MAIN_CHANNEL_ID**](https://yeecord.com/docs/commands/join-message#:~:text=%E5%8A%A0%E5%85%A5%E8%A8%8A%E6%81%AF%E3%80%82-,%E5%A6%82%E4%BD%95%E7%8D%B2%E5%BE%97%E9%A0%BB%E9%81%93%20ID,-%E9%80%B2%E5%85%A5%20Discord%20%E7%94%A8%E6%88%B6)並取一個名子給機器人
+6.配置 **.env.example**中的[**DC_TOKEN**](https://hackmd.io/@smallshawn95/python_discord_bot_base)和[**MAIN_CHANNEL_ID**](https://yeecord.com/docs/commands/join-message#:~:text=%E5%8A%A0%E5%85%A5%E8%A8%8A%E6%81%AF%E3%80%82-,%E5%A6%82%E4%BD%95%E7%8D%B2%E5%BE%97%E9%A0%BB%E9%81%93%20ID,-%E9%80%B2%E5%85%A5%20Discord%20%E7%94%A8%E6%88%B6)並給機器人取一個名子
 
-7. 將 **.env.example**重命名為 **.env**
+7.將 **.env.example**重命名為 **.env**
 
-8. 執行**main.py**
+8.執行**main.py**
 
 ## 免則聲明
 >本人僅開源此工具，並提供必要的協助以利技術交流。
 >
 >勿將此工具用作不法之用途，使用者之任何行為皆與本人無關。
+
+## 待辦
+- 本地音訊

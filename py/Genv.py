@@ -64,6 +64,7 @@ def delete_files_in_folder(folder_path):
 
 
 
+print(ENV)
 if __name__=='__main__':
     print(ENV)
     update_env_variable("MainRoomCodde","4545454")

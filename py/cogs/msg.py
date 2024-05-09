@@ -74,7 +74,7 @@ class msg(cog_class):
                 custom_id="finish"+v
             )
         )
-        directory  = r'py\video' if v=="V" else r'py\sound'
+        directory  = ENV["SCRIPT_DIRECTORY"] + (r'\video' if v=="V" else r'\sound')
         view.add_item(
             discord.ui.Select(custom_id="media"+v, placeholder=file_name, options=
                 [discord.SelectOption(label=D) for D in self.list_files(directory)]
